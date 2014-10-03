@@ -9,6 +9,7 @@ var browserSync = require('browser-sync');
 var sources = {
   js: 'app/js/**/*.js',
   html: 'app/**/*.jade',
+  css: 'app/**/*.css',
 };
 
 gulp.task('scripts', function() {
@@ -23,6 +24,11 @@ gulp.task('html', function() {
     .pipe(gulp.dest('./.build'));
 });
 
+gulp.task('css', function() {
+  gulp.src(sources.css)
+    .pipe(gulp.dest('./.build'));
+});
+
 gulp.task('browser-sync', function() {
   browserSync({
     server: {
@@ -34,6 +40,7 @@ gulp.task('browser-sync', function() {
 gulp.task('server', ['browser-sync'], function () {
   gulp.watch(sources.js, ['scripts', browserSync.reload]);
   gulp.watch(sources.html, ['html', browserSync.reload]);
+  gulp.watch(sources.css, ['css', browserSync.reload]);
 });
 
-gulp.task('default', ['scripts', 'html', 'server']);
+gulp.task('default', ['scripts', 'html', 'css', 'server']);
