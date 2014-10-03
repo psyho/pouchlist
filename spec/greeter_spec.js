@@ -1,3 +1,5 @@
+var Greeter = require('greeter');
+
 describe("Greeter", function() {
   it("greets with salutation and name", function() {
     var greeter = new Greeter("Hello");

@@ -1,10 +1,12 @@
+process.env.NODE_PATH = process.env.NODE_PATH || './node_modules';
+process.env.NODE_PATH += ":./app/js";
+
 module.exports = function(config) {
   config.set({
     basePath: '',
-    frameworks: ['jasmine'],
+    frameworks: ['jasmine', 'browserify'],
 
     files: [
-      'app/**/*.js',
       'spec/**/*.js'
     ],
 
@@ -12,6 +14,7 @@ module.exports = function(config) {
     ],
 
     preprocessors: {
+      'spec/**/*.js': [ 'browserify' ]
     },
 
     reporters: ['progress'],
@@ -21,6 +24,11 @@ module.exports = function(config) {
     logLevel: config.LOG_INFO,
     autoWatch: true,
     browsers: ['PhantomJS'],
-    singleRun: false
+    singleRun: false,
+
+    browserify: {
+      debug: true,
+      transform: []
+    },
   });
 };
