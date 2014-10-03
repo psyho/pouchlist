@@ -2,6 +2,7 @@ process.env.NODE_PATH = process.env.NODE_PATH || './node_modules';
 process.env.NODE_PATH += ":./app/js";
 
 var gulp = require('gulp');
+var gutil = require('gulp-util');
 var browserify = require('gulp-browserify');
 var jade = require('gulp-jade');
 var browserSync = require('browser-sync');
@@ -16,6 +17,7 @@ var sources = {
 gulp.task('app', function() {
   gulp.src('app/js/app.js')
     .pipe(browserify({debug: true}))
+    .on('error', gutil.log)
     .pipe(gulp.dest('./.build/js'));
 });
 
@@ -24,6 +26,7 @@ gulp.task('vendor', function() {
     .pipe(browserify({
       noParse: ['angular/angular', 'pouchdb/dist/pouchdb', 'rxjs/dist/rx.all.js']
     }))
+    .on('error', gutil.log)
     .pipe(gulp.dest('./.build/js'));
 });
 
