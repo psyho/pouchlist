@@ -3,11 +3,12 @@ process.env.NODE_PATH += ":./app/js";
 
 var gulp = require('gulp');
 var browserify = require('gulp-browserify');
+var jade = require('gulp-jade');
 var browserSync = require('browser-sync');
 
 var sources = {
   js: 'app/js/**/*.js',
-  html: 'app/**/*.html',
+  html: 'app/**/*.jade',
 };
 
 gulp.task('scripts', function() {
@@ -18,6 +19,7 @@ gulp.task('scripts', function() {
 
 gulp.task('html', function() {
   gulp.src(sources.html)
+    .pipe(jade())
     .pipe(gulp.dest('./.build'));
 });
 
