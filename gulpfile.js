@@ -10,6 +10,7 @@ var sources = {
   js: 'app/js/**/*.js',
   html: 'app/**/*.jade',
   css: 'app/**/*.css',
+  images: 'app/images/**/*.png',
 };
 
 gulp.task('scripts', function() {
@@ -29,6 +30,11 @@ gulp.task('css', function() {
     .pipe(gulp.dest('./.build'));
 });
 
+gulp.task('images', function() {
+  gulp.src(sources.images)
+    .pipe(gulp.dest('./.build/images'));
+});
+
 gulp.task('browser-sync', function() {
   browserSync({
     server: {
@@ -41,6 +47,7 @@ gulp.task('server', ['browser-sync'], function () {
   gulp.watch(sources.js, ['scripts', browserSync.reload]);
   gulp.watch(sources.html, ['html', browserSync.reload]);
   gulp.watch(sources.css, ['css', browserSync.reload]);
+  gulp.watch(sources.images, ['images', browserSync.reload]);
 });
 
-gulp.task('default', ['scripts', 'html', 'css', 'server']);
+gulp.task('default', ['scripts', 'html', 'css', 'images', 'server']);
