@@ -1,0 +1,16 @@
+{
+  "name": "pouchlist",
+  "version": "0.0.1",
+  "description": "TODO MVC example with PouchDB+AngularJS+RxJS",
+  "main": "index.js",
+  "scripts": {
+    "test": "karma start --single-run"
+  },
+  "author": "Adam Pohorecki <adam@gunpowderlabs.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "karma": "~0.12.24",
+    "karma-jasmine": "~0.1.5",
+    "karma-phantomjs-launcher": "~0.1.4"
+  }
+}
