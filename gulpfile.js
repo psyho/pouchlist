@@ -13,17 +13,21 @@ var sources = {
   images: 'app/images/**/*.png',
 };
 
-gulp.task('scripts', function() {
+gulp.task('app', function() {
   gulp.src('app/js/app.js')
     .pipe(browserify({debug: true}))
     .pipe(gulp.dest('./.build/js'));
+});
 
+gulp.task('vendor', function() {
   gulp.src('app/js/vendor.js')
     .pipe(browserify({
       noParse: ['angular/angular', 'pouchdb/dist/pouchdb', 'rxjs/dist/rx.all.js']
     }))
     .pipe(gulp.dest('./.build/js'));
 });
+
+gulp.task('scripts', ['app', 'vendor']);
 
 gulp.task('html', function() {
   gulp.src(sources.html)
@@ -49,11 +53,15 @@ gulp.task('browser-sync', function() {
   });
 });
 
-gulp.task('server', ['browser-sync'], function () {
-  gulp.watch(sources.js, ['scripts', browserSync.reload]);
-  gulp.watch(sources.html, ['html', browserSync.reload]);
-  gulp.watch(sources.css, ['css', browserSync.reload]);
-  gulp.watch(sources.images, ['images', browserSync.reload]);
+gulp.task('watch', function () {
+  gulp.watch(sources.js, ['scripts']);
+  gulp.watch(sources.html, ['html']);
+  gulp.watch(sources.css, ['css']);
+  gulp.watch(sources.images, ['images']);
+});
+
+gulp.task('server', ['browser-sync', 'watch'], function () {
+  gulp.watch('.build/**/*', browserSync.reload);
 });
 
 gulp.task('default', ['scripts', 'html', 'css', 'images', 'server']);
