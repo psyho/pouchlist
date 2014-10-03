@@ -1,10 +1,12 @@
-TodosCtrl.$inject = ["todosRepository"];
-function TodosCtrl(todosRepository) {
+TodosCtrl.$inject = ["todosRepository", "$scope"];
+function TodosCtrl(todosRepository, $scope) {
   this.repo = todosRepository;
 
   this.resetNewTodo();
   this.resetEditedTodo();
   this.reloadList();
+
+  this.repo.onChange($scope, this.reloadList.bind(this));
 }
 
 TodosCtrl.prototype = {
@@ -12,28 +14,21 @@ TodosCtrl.prototype = {
     if(!this.newTodo.description) { return; }
 
     this.repo.create(this.newTodo)
-      .then(this.resetNewTodo.bind(this))
-      .then(this.reloadList.bind(this));
+      .then(this.resetNewTodo.bind(this));
   },
 
   remove: function(todo) {
-    this.repo.delete(todo)
-      .then(this.reloadList.bind(this));
+    this.repo.delete(todo);
   },
 
   removeCompleted: function() {
-    this.repo.completed()
-      .then(this.removeAll.bind(this))
-      .then(this.reloadList.bind(this));
-  },
-
-  removeAll: function(todos) {
-    return this.repo.bulkDelete(todos);
+    this.repo.completed().then(function(completed) {
+      return this.repo.bulkDelete(completed);
+    }.bind(this));
   },
 
   todoCompleted: function(todo) {
-    this.repo.update(todo)
-      .then(this.reloadList.bind(this));
+    this.repo.update(todo);
   },
 
   toggleCompleted: function() {
@@ -43,10 +38,7 @@ TodosCtrl.prototype = {
       todo.completed = completed;
     });
 
-    this.resetAllCompleted();
-
-    this.repo.bulkUpdate(this.list)
-      .then(this.reloadList.bind(this));
+    this.repo.bulkUpdate(this.list);
   },
 
   activeCount: function() {
@@ -72,8 +64,7 @@ TodosCtrl.prototype = {
   },
 
   updateTodo: function() {
-    this.repo.update(this.editedTodo)
-      .then(this.reloadList.bind(this));
+    this.repo.update(this.editedTodo);
     this.resetEditedTodo();
   },
 

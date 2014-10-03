@@ -1,5 +1,5 @@
-todosRepository.$inject = ["$q"];
-function todosRepository($q) {
+todosRepository.$inject = ["$q", "$rootScope"];
+function todosRepository($q, $rootScope) {
   var list = [];
 
   function findById(id) {
@@ -8,7 +8,15 @@ function todosRepository($q) {
     })[0];
   }
 
+  function triggerChangeEvent() {
+    $rootScope.$broadcast('todos:changed');
+  }
+
   return {
+    onChange: function($scope, fn) {
+      $scope.$on('todos:changed', fn);
+    },
+
     all: function() {
       return $q.when(angular.copy(list));
     },
@@ -23,6 +31,7 @@ function todosRepository($q) {
     create: function(todo) {
       todo._id = new Date().toJSON();
       list.push(todo);
+      triggerChangeEvent();
       return $q.when(todo);
     },
 
@@ -30,6 +39,7 @@ function todosRepository($q) {
       list = list.filter(function(t) {
         return t._id !== todo._id;
       });
+      triggerChangeEvent();
       return $q.when(todo);
     },
 
@@ -39,6 +49,7 @@ function todosRepository($q) {
           return toRemove._id === t._id;
         });
       });
+      triggerChangeEvent();
       return $q.when(todos);
     },
 
@@ -48,12 +59,14 @@ function todosRepository($q) {
         angular.extend(local, todo);
       });
 
+      triggerChangeEvent();
       return $q.when(todos);
     },
 
     update: function(todo) {
       var local = findById(todo._id) || {};
       angular.extend(local, todo);
+      triggerChangeEvent();
       return $q.when(local);
     },
   };
