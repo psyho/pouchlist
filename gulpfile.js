@@ -17,6 +17,12 @@ gulp.task('scripts', function() {
   gulp.src('app/js/app.js')
     .pipe(browserify({debug: true}))
     .pipe(gulp.dest('./.build/js'));
+
+  gulp.src('app/js/vendor.js')
+    .pipe(browserify({
+      noParse: ['angular/angular', 'pouchdb/dist/pouchdb', 'rxjs/dist/rx.all.js']
+    }))
+    .pipe(gulp.dest('./.build/js'));
 });
 
 gulp.task('html', function() {
