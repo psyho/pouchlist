@@ -1,29 +1,39 @@
-function TodosCtrl() {
+TodosCtrl.$inject = ["todosRepository"];
+function TodosCtrl(todosRepository) {
+  this.repo = todosRepository;
+
   this.resetNewTodo();
   this.resetEditedTodo();
-
-  this.resetList([]);
+  this.reloadList();
 }
 
 TodosCtrl.prototype = {
   add: function() {
-    this.newTodo._id = new Date().toJSON();
-    this.resetList(this.list.concat([this.newTodo]));
-    this.resetNewTodo();
+    if(!this.newTodo.description) { return; }
+
+    this.repo.create(this.newTodo)
+      .then(this.resetNewTodo.bind(this))
+      .then(this.reloadList.bind(this));
   },
 
   remove: function(todo) {
-    var newList = this.list.filter(function(t) {
-      return t !== todo;
-    });
-    this.resetList(newList);
+    this.repo.delete(todo)
+      .then(this.reloadList.bind(this));
   },
 
   removeCompleted: function() {
-    var newList = this.list.filter(function(todo) {
-      return !todo.completed;
-    });
-    this.resetList(newList);
+    this.repo.completed()
+      .then(this.removeAll.bind(this))
+      .then(this.reloadList.bind(this));
+  },
+
+  removeAll: function(todos) {
+    return this.repo.bulkDelete(todos);
+  },
+
+  todoCompleted: function(todo) {
+    this.repo.update(todo)
+      .then(this.reloadList.bind(this));
   },
 
   toggleCompleted: function() {
@@ -34,6 +44,9 @@ TodosCtrl.prototype = {
     });
 
     this.resetAllCompleted();
+
+    this.repo.bulkUpdate(this.list)
+      .then(this.reloadList.bind(this));
   },
 
   activeCount: function() {
@@ -59,16 +72,9 @@ TodosCtrl.prototype = {
   },
 
   updateTodo: function() {
-    this.updateById(this.editedTodo._id, {description: this.editedTodo.description});
+    this.repo.update(this.editedTodo)
+      .then(this.reloadList.bind(this));
     this.resetEditedTodo();
-  },
-
-  updateById: function(id, changes) {
-    this.list.forEach(function(todo) {
-      if(todo._id === id) {
-        angular.extend(todo, changes);
-      }
-    });
   },
 
   resetEditedTodo: function() {
@@ -79,9 +85,12 @@ TodosCtrl.prototype = {
     this.allCompleted = (this.completedCount() === this.list.length);
   },
 
-  resetList: function(list) {
-    this.list = list;
-    this.resetAllCompleted();
+  reloadList: function() {
+    var self = this;
+    this.repo.all().then(function(list) {
+      self.list = list;
+      self.resetAllCompleted();
+    });
   },
 
   resetNewTodo: function() {

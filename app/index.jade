@@ -14,7 +14,7 @@ html(ng-app='todomvc')
         ul#todo-list
           li(ng-repeat='todo in todos.list', ng-class='{completed: todo.completed, editing: todos.isEditing(todo)}')
             .view
-              input.toggle(type="checkbox", ng-model='todo.completed', ng-change='todos.resetAllCompleted()')
+              input.toggle(type="checkbox", ng-model='todo.completed', ng-change='todos.todoCompleted(todo)')
               label(ng-dblclick='todos.startEditing(todo)') {{todo.description}}
               button.destroy(ng-click='todos.remove(todo)')
 
