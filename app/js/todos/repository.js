@@ -1,82 +1,77 @@
-todosRepository.$inject = ["$q", "$rootScope"];
-function todosRepository($q, $rootScope) {
-  var list = [];
+todosRepository.$inject = ["$q", "$rootScope", "pouchdb"];
+function todosRepository($q, $rootScope, pouchdb) {
+  var db = pouchdb("todos");
 
-  function findById(id) {
-    return list.filter(function(todo) {
-      return id === todo._id;
-    })[0];
+  function extractDocs(response) {
+    return response.rows.map(function(row) {
+      return row.doc;
+    });
   }
 
-  function triggerChangeEvent() {
+  function filter(predicate) {
+    return function(docs) {
+      return docs.filter(predicate);
+    };
+  }
+
+  function reject(predicate) {
+    return filter(function() {
+      return !predicate.apply(this, arguments);
+    });
+  }
+
+  function isCompleted(todo) {
+    return todo.completed;
+  }
+
+  function triggerChangeEvent(value) {
     $rootScope.$broadcast('todos:changed');
+    return value;
   }
 
-  return {
+  var repository = {
     onChange: function($scope, fn) {
       $scope.$on('todos:changed', fn);
     },
 
     all: function() {
-      return $q.when(angular.copy(list));
+      return db.allDocs({include_docs: true}).then(extractDocs);
     },
 
     completed: function() {
-      var completed = list.filter(function(t) {
-        return t.completed;
-      });
-      return $q.when(completed);
+      return repository.all().then(filter(isCompleted));
     },
 
     active: function() {
-      var active = list.filter(function(t) {
-        return !t.completed;
-      });
-      return $q.when(active);
+      return repository.all().then(reject(isCompleted));
     },
 
     create: function(todo) {
       todo._id = new Date().toJSON();
-      list.push(todo);
-      triggerChangeEvent();
-      return $q.when(todo);
+      return db.put(todo).then(triggerChangeEvent);
     },
 
     delete: function(todo) {
-      list = list.filter(function(t) {
-        return t._id !== todo._id;
-      });
-      triggerChangeEvent();
-      return $q.when(todo);
+      return db.remove(todo).then(triggerChangeEvent);
     },
 
     bulkDelete: function(todos) {
-      list = list.filter(function(t) {
-        return !todos.some(function(toRemove) {
-          return toRemove._id === t._id;
-        });
+      var promises = todos.map(function(todo) {
+        return db.remove(todo);
       });
-      triggerChangeEvent();
-      return $q.when(todos);
+      return $q.all(promises).then(triggerChangeEvent);
     },
 
     bulkUpdate: function(todos) {
-      todos.forEach(function(todo) {
-        var local = findById(todo._id) || {};
-        angular.extend(local, todo);
-      });
-
-      triggerChangeEvent();
-      return $q.when(todos);
+      return db.bulkDocs(todos).then(triggerChangeEvent);
     },
 
     update: function(todo) {
-      var local = findById(todo._id) || {};
-      angular.extend(local, todo);
-      triggerChangeEvent();
-      return $q.when(local);
+      return db.put(todo).then(triggerChangeEvent);
     },
   };
+
+  return repository;
 }
 
 module.exports = todosRepository;

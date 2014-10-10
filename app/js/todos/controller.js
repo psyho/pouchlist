@@ -1,5 +1,6 @@
 TodosCtrl.$inject = ["todosRepository", "$scope", "fetchTodos"];
 function TodosCtrl(todosRepository, $scope, fetchTodos) {
+  this.list = [];
   this.repo = todosRepository;
   this.fetchTodos = fetchTodos;
 
