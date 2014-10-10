@@ -5,7 +5,7 @@ section#todoapp
       input#new-todo(type='text', ng-model='todos.newTodo.description' placeholder='What needs to be done?', autofocus)
   section#main
     ul#todo-list
-      li(ng-repeat='todo in todos.list', ng-class='{completed: todo.completed, editing: todos.isEditing(todo)}')
+      li(ng-repeat='todo in todos.list track by todo._id', ng-class='{completed: todo.completed, editing: todos.isEditing(todo)}')
         .view
           input.toggle(type="checkbox", ng-model='todo.completed', ng-change='todos.todoCompleted(todo)')
           label(ng-dblclick='todos.startEditing(todo)') {{todo.description}}

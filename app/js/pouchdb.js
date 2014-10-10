@@ -7,12 +7,17 @@ function pouchdb($q) {
     };
   }
 
+  function delegate(db, method) {
+    return db[method].bind(db);
+  }
+
   function wrap(db) {
     return {
       allDocs: wrapPromise(db, 'allDocs'),
       bulkDocs: wrapPromise(db, 'bulkDocs'),
       put: wrapPromise(db, 'put'),
       remove: wrapPromise(db, 'remove'),
+      changes: delegate(db, 'changes'),
     };
   };
 

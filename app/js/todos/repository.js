@@ -1,7 +1,5 @@
-todosRepository.$inject = ["$q", "$rootScope", "pouchdb"];
-function todosRepository($q, $rootScope, pouchdb) {
-  var db = pouchdb("todos");
-
+todosRepository.$inject = ["$q", "db"];
+function todosRepository($q, db) {
   function extractDocs(response) {
     return response.rows.map(function(row) {
       return row.doc;
@@ -24,15 +22,8 @@ function todosRepository($q, $rootScope, pouchdb) {
     return todo.completed;
   }
 
-  function triggerChangeEvent(value) {
-    $rootScope.$broadcast('todos:changed');
-    return value;
-  }
-
   var repository = {
-    onChange: function($scope, fn) {
-      $scope.$on('todos:changed', fn);
-    },
+    onChange: db.onChange,
 
     all: function() {
       return db.allDocs({include_docs: true}).then(extractDocs);
@@ -48,26 +39,26 @@ function todosRepository($q, $rootScope, pouchdb) {
 
     create: function(todo) {
       todo._id = new Date().toJSON();
-      return db.put(todo).then(triggerChangeEvent);
+      return db.put(todo);
     },
 
     delete: function(todo) {
-      return db.remove(todo).then(triggerChangeEvent);
+      return db.remove(todo);
     },
 
     bulkDelete: function(todos) {
       var promises = todos.map(function(todo) {
         return db.remove(todo);
       });
-      return $q.all(promises).then(triggerChangeEvent);
+      return $q.all(promises);
     },
 
     bulkUpdate: function(todos) {
-      return db.bulkDocs(todos).then(triggerChangeEvent);
+      return db.bulkDocs(todos);
     },
 
     update: function(todo) {
-      return db.put(todo).then(triggerChangeEvent);
+      return db.put(todo);
     },
   };
 
