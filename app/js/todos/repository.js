@@ -28,6 +28,13 @@ function todosRepository($q, $rootScope) {
       return $q.when(completed);
     },
 
+    active: function() {
+      var active = list.filter(function(t) {
+        return !t.completed;
+      });
+      return $q.when(active);
+    },
+
     create: function(todo) {
       todo._id = new Date().toJSON();
       list.push(todo);

@@ -24,6 +24,7 @@
   },
   "napa": {
     "angular": "angular/bower-angular#v1.2.26",
+    "angular-route": "angular/bower-angular-route#v1.2.26",
     "pouchdb": "pouchdb/pouchdb#3.0.6",
     "rxjs": "Reactive-Extensions/RxJS#v2.3.12"
   }

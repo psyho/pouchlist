@@ -1,6 +1,7 @@
-TodosCtrl.$inject = ["todosRepository", "$scope"];
-function TodosCtrl(todosRepository, $scope) {
+TodosCtrl.$inject = ["todosRepository", "$scope", "fetchTodos"];
+function TodosCtrl(todosRepository, $scope, fetchTodos) {
   this.repo = todosRepository;
+  this.fetchTodos = fetchTodos;
 
   this.resetNewTodo();
   this.resetEditedTodo();
@@ -78,7 +79,7 @@ TodosCtrl.prototype = {
 
   reloadList: function() {
     var self = this;
-    this.repo.all().then(function(list) {
+    this.fetchTodos().then(function(list) {
       self.list = list;
       self.resetAllCompleted();
     });

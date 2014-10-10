@@ -4,39 +4,8 @@ html(ng-app='todomvc')
     meta(charset='utf-8')
     title PouchDB + AngularJS + RxJS TodoMVC
     link(rel='stylesheet', href='css/base.css')
-  body(ng-controller='TodosCtrl as todos')
-    section#todoapp
-      header#header
-        h1 todos
-        form#todo-form(ng-submit='todos.add()')
-          input#new-todo(type='text', ng-model='todos.newTodo.description' placeholder='What needs to be done?', autofocus)
-      section#main
-        ul#todo-list
-          li(ng-repeat='todo in todos.list', ng-class='{completed: todo.completed, editing: todos.isEditing(todo)}')
-            .view
-              input.toggle(type="checkbox", ng-model='todo.completed', ng-change='todos.todoCompleted(todo)')
-              label(ng-dblclick='todos.startEditing(todo)') {{todo.description}}
-              button.destroy(ng-click='todos.remove(todo)')
-
-            form(ng-submit='todos.updateTodo()')
-              input.edit(type='text', ng-model='todos.editedTodo.description',
-                on-escape='todos.cancelEditing()', ng-blur='todos.updateTodo()')
-
-        input#toggle-all(type='checkbox', ng-model='todos.allCompleted', ng-change='todos.toggleCompleted()')
-      footer#footer
-        span#todo-count
-          strong {{todos.activeCount()}} todos left
-        ul#filters
-          li
-            a.selected(href='#/') All
-          li
-            a(href='#/active') Active
-          li
-            a(href='#/completed') Completed
-        button#clear-completed(ng-click='todos.removeCompleted()')
-          | Clear completed ({{todos.completedCount()}})
-    footer#info
-      p Double-click to edit a todo
+  body
+    div(ng-view)
 
     script(src='js/vendor.js')
     script(src='js/app.js')
