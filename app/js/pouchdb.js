@@ -18,6 +18,7 @@ function pouchdb($q) {
       put: wrapPromise(db, 'put'),
       remove: wrapPromise(db, 'remove'),
       changes: delegate(db, 'changes'),
+      sync: delegate(db, 'sync'),
     };
   };
 
