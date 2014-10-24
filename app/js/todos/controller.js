@@ -15,8 +15,7 @@ TodosCtrl.prototype = {
   add: function() {
     if(!this.newTodo.description) { return; }
 
-    this.repo.create(this.newTodo)
-      .then(this.resetNewTodo.bind(this));
+    this.repo.create(this.newTodo).forEach(this.resetNewTodo.bind(this));
   },
 
   remove: function(todo) {
@@ -24,7 +23,7 @@ TodosCtrl.prototype = {
   },
 
   removeCompleted: function() {
-    this.repo.completed().then(function(completed) {
+    this.repo.completed().forEach(function(completed) {
       return this.repo.bulkDelete(completed);
     }.bind(this));
   },
@@ -80,7 +79,7 @@ TodosCtrl.prototype = {
 
   reloadList: function() {
     var self = this;
-    this.fetchTodos().then(function(list) {
+    this.fetchTodos().forEach(function(list) {
       self.list = list;
       self.resetAllCompleted();
     });

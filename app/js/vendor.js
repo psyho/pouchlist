@@ -1,4 +1,4 @@
 require('angular/angular');
 require('angular-route/angular-route');
 window.PouchDB = require('pouchdb/dist/pouchdb');
-require('rxjs/dist/rx.all.js');
+window.Rx = require('rxjs/dist/rx.all.js');

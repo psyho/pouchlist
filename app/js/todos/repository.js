@@ -7,15 +7,15 @@ function todosRepository($q, db) {
   }
 
   function filter(predicate) {
-    return function(docs) {
-      return docs.filter(predicate);
+    return function(arr) {
+      return arr.filter(predicate);
     };
   }
 
-  function reject(predicate) {
-    return filter(function() {
+  function not(predicate) {
+    return function() {
       return !predicate.apply(this, arguments);
-    });
+    };
   }
 
   function isCompleted(todo) {
@@ -26,15 +26,15 @@ function todosRepository($q, db) {
     onChange: db.onChange,
 
     all: function() {
-      return db.allDocs({include_docs: true}).then(extractDocs);
+      return db.allDocs({include_docs: true}).map(extractDocs);
     },
 
     completed: function() {
-      return repository.all().then(filter(isCompleted));
+      return repository.all().map(filter(isCompleted));
     },
 
     active: function() {
-      return repository.all().then(reject(isCompleted));
+      return repository.all().map(filter(not(isCompleted)));
     },
 
     create: function(todo) {
@@ -47,10 +47,10 @@ function todosRepository($q, db) {
     },
 
     bulkDelete: function(todos) {
-      var promises = todos.map(function(todo) {
+      var observables = todos.map(function(todo) {
         return db.remove(todo);
       });
-      return $q.all(promises);
+      return Rx.Observable.zip(observables);
     },
 
     bulkUpdate: function(todos) {

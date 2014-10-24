@@ -1,9 +1,13 @@
-pouchdb.$inject = ["$q"];
-function pouchdb($q) {
-  function wrapPromise(db, method) {
+pouchdb.$inject = ["triggerApply"];
+function pouchdb(triggerApply) {
+  function wrapInObservable(db, method) {
     return function() {
       var promise = db[method].apply(db, arguments);
-      return $q.when(promise);
+
+      return Rx.Observable.fromPromise(promise).map(function(response) {
+        triggerApply();
+        return response;
+      });
     };
   }
 
@@ -13,10 +17,10 @@ function pouchdb($q) {
 
   function wrap(db) {
     return {
-      allDocs: wrapPromise(db, 'allDocs'),
-      bulkDocs: wrapPromise(db, 'bulkDocs'),
-      put: wrapPromise(db, 'put'),
-      remove: wrapPromise(db, 'remove'),
+      allDocs: wrapInObservable(db, 'allDocs'),
+      bulkDocs: wrapInObservable(db, 'bulkDocs'),
+      put: wrapInObservable(db, 'put'),
+      remove: wrapInObservable(db, 'remove'),
       changes: delegate(db, 'changes'),
       sync: delegate(db, 'sync'),
     };

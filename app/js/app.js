@@ -4,6 +4,7 @@ app.constant('filters', require('./todos/filters.js'));
 
 app.factory('pouchdb', require('./pouchdb'));
 app.factory('db', require('./db'));
+app.factory('triggerApply', require('./trigger_apply.js'));
 
 app.factory('todosRepository', require('./todos/repository.js'));
 app.controller('TodosCtrl', require('./todos/controller.js'));
