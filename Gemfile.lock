@@ -1,0 +1,12 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    rack (1.5.2)
+    rack-offline (0.6.4)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  rack
+  rack-offline
