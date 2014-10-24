@@ -23,8 +23,6 @@ function todosRepository($q, db) {
   }
 
   var repository = {
-    onChange: db.onChange,
-
     all: function() {
       return db.allDocs({include_docs: true}).map(extractDocs);
     },

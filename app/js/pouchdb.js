@@ -1,6 +1,6 @@
 pouchdb.$inject = ["triggerApply"];
 function pouchdb(triggerApply) {
-  function wrapInObservable(db, method) {
+  function wrapCommand(db, method) {
     return function() {
       var promise = db[method].apply(db, arguments);
 
@@ -11,16 +11,51 @@ function pouchdb(triggerApply) {
     };
   }
 
+  function wrapQuery(db, changes, method) {
+    return function() {
+      var args = arguments;
+      var subject = new Rx.ReplaySubject(1);
+
+      function fetch() {
+        db[method].apply(db, args).then(function(result) {
+          subject.onNext(result);
+        });
+      }
+
+      changes.forEach(fetch);
+      fetch();
+
+      return subject.distinctUntilChanged();
+    };
+  }
+
   function delegate(db, method) {
     return db[method].bind(db);
   }
 
+  function changesObservable(db) {
+    var changes = db.changes({live: true, since: 'now'});
+    var subject = new Rx.Subject();
+
+    changes.on('change', function() {
+      subject.onNext();
+    });
+
+    changes.on('error', function(e) {
+      subject.onError(e);
+    });
+
+    return subject;
+  }
+
   function wrap(db) {
+    var changes = changesObservable(db).throttle(100);
+
     return {
-      allDocs: wrapInObservable(db, 'allDocs'),
-      bulkDocs: wrapInObservable(db, 'bulkDocs'),
-      put: wrapInObservable(db, 'put'),
-      remove: wrapInObservable(db, 'remove'),
+      allDocs: wrapQuery(db, changes, 'allDocs'),
+      bulkDocs: wrapCommand(db, 'bulkDocs'),
+      put: wrapCommand(db, 'put'),
+      remove: wrapCommand(db, 'remove'),
       changes: delegate(db, 'changes'),
       sync: delegate(db, 'sync'),
     };

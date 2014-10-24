@@ -1,3 +1,5 @@
+require('./rx_ext');
+
 var app = angular.module('todomvc', ['ng', 'ngRoute']);
 
 app.constant('filters', require('./todos/filters.js'));

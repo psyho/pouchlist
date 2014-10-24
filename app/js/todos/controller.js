@@ -1,14 +1,17 @@
-TodosCtrl.$inject = ["todosRepository", "$scope", "fetchTodos"];
-function TodosCtrl(todosRepository, $scope, fetchTodos) {
+TodosCtrl.$inject = ["todosRepository", "$scope", "todos"];
+function TodosCtrl(todosRepository, $scope, todos) {
   this.list = [];
   this.repo = todosRepository;
-  this.fetchTodos = fetchTodos;
+
+  var allCompleted = todos.map(function(list) {
+    return list.all({completed: true});
+  });
+
+  todos.$assign($scope, 'list', this);
+  allCompleted.$assign($scope, 'allCompleted', this);
 
   this.resetNewTodo();
   this.resetEditedTodo();
-  this.reloadList();
-
-  this.repo.onChange($scope, this.reloadList.bind(this));
 }
 
 TodosCtrl.prototype = {
@@ -71,18 +74,6 @@ TodosCtrl.prototype = {
 
   resetEditedTodo: function() {
     this.editedTodo = {};
-  },
-
-  resetAllCompleted: function() {
-    this.allCompleted = (this.completedCount() === this.list.length);
-  },
-
-  reloadList: function() {
-    var self = this;
-    this.fetchTodos().forEach(function(list) {
-      self.list = list;
-      self.resetAllCompleted();
-    });
   },
 
   resetNewTodo: function() {

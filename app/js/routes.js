@@ -8,7 +8,7 @@ function routes($routeProvider, $locationProvider, filters) {
       controllerAs: 'todos',
       templateUrl: '/todos.html',
       resolve: {
-        fetchTodos: filter.get
+        todos: filter.get
       }
     });
   });

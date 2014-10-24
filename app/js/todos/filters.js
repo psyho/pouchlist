@@ -1,7 +1,7 @@
 function fetch(name) {
   fetcher.$inject = ["todosRepository"];
   function fetcher(todosRepository) {
-    return todosRepository[name];
+    return todosRepository[name]();
   }
   return fetcher;
 }
