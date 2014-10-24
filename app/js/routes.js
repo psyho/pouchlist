@@ -1,6 +1,6 @@
 routes.$inject = ["$routeProvider", "$locationProvider", "filters"];
 function routes($routeProvider, $locationProvider, filters) {
-  $locationProvider.html5Mode(true);
+  $locationProvider.html5Mode(false);
 
   filters.forEach(function(filter) {
     $routeProvider.when(filter.url, {

@@ -21,7 +21,7 @@ section#todoapp
       strong {{todos.activeCount()}} todos left
     ul#filters(ng-controller='FiltersCtrl as filters')
       li(ng-repeat='filter in filters.list')
-        a(ng-href='{{filter.url}}', ng-class='{selected: filters.isActive(filter)}') {{filter.name}}
+        a(ng-href='#{{filter.url}}', ng-class='{selected: filters.isActive(filter)}') {{filter.name}}
     button#clear-completed(ng-click='todos.removeCompleted()')
       | Clear completed ({{todos.completedCount()}})
 footer#info
